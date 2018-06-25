@@ -1,15 +1,19 @@
-FROM php:7.1-apache
-
-MAINTAINER module@proudcommerce.com
+FROM php:7.2-apache-stretch
 
 # timezone / date   
-RUN echo "Europe/Berlin" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+RUN echo "Asia/Shanghai" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+
+RUN echo "deb http://mirrors.163.com/debian/ buster main contrib  \\n \
+          deb-src http://mirrors.163.com/debian/ buster main contrib \\n \
+          deb http://ftp.cn.debian.org/debian/ buster main contrib  \\n \
+          deb-src http://ftp.cn.debian.org/debian/ buster main contrib \\n \
+          deb http://repo.mysql.com/apt/debian/ jessie mysql-5.7" > /etc/apt/sources.list
 
 # install packages
 RUN apt-get update -y && \
-  apt-get install -y --no-install-recommends \
+  apt-get install -y --no-install-recommends --allow-unauthenticated \
   less vim wget unzip rsync git mysql-client \
-  libcurl4-openssl-dev libfreetype6 libjpeg62-turbo libpng-dev libjpeg-dev libxml2-dev libwebp6 libxpm4 && \
+  libcurl3 libfreetype6 libjpeg62-turbo libpng-dev libjpeg-dev libxml2-dev libwebp6 libxpm4 && \
   apt-get clean && \
   apt-get autoremove -y && \
   rm -rf /var/lib/apt/lists/* && \
@@ -40,3 +44,4 @@ COPY ./files/config.inc.php /var/www/config.inc.php
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]
+
